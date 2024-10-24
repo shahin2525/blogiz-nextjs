@@ -1,11 +1,19 @@
 import BlogDetails from "@/components/ui/BlogDetails";
+import { Blog } from "@/types";
 
-interface blogId {
+interface BlogId {
   params: {
     blogId: string;
   };
 }
-const page = async ({ params }: blogId) => {
+export const generateStaticParams = async () => {
+  const res = await fetch("http://localhost:5000/blogs");
+  const blogs = await res.json();
+  return blogs.slice(0, 3).map((blog: Blog) => ({
+    blogId: blog.id,
+  }));
+};
+const BlogDetailPage = async ({ params }: BlogId) => {
   const res = await fetch(`http://localhost:5000/blogs/${params.blogId}`, {
     cache: "no-store",
   });
@@ -15,4 +23,4 @@ const page = async ({ params }: blogId) => {
   return <div className="my-5">{<BlogDetails blog={blog}></BlogDetails>}</div>;
 };
 
-export default page;
+export default BlogDetailPage;
